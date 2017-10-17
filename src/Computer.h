@@ -5,30 +5,16 @@
 #ifndef VIRUS_COMPUTER_H
 #define VIRUS_COMPUTER_H
 
-
 class Computer {
+    friend class Model;
+
 public:
-    void infect() {
-        this->infected = true;
-    }
-
-    void shield() {
-        this->shielded = true;
-    }
-
-    bool isInfected() const {
-        return infected;
-    }
-
-    bool isShielded() const {
-        return shielded;
-    }
-
+    Computer();
 
 private:
+    bool updated;
     bool infected;
-    bool shielded;
-};
 
+};
 
 #endif //VIRUS_COMPUTER_H

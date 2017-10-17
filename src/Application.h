@@ -7,25 +7,22 @@
 
 
 #include "RandomNumberGenerator.h"
-#include "Computer.h"
 #include "Model.h"
 
 class Application {
 public:
     explicit Application(const RandomNumberGenerator &generator);
 
-    unsigned int run(Model model);
+    std::vector<Statistics> run(Model &model);
 
 private:
     RandomNumberGenerator generator;
 
-    void printInfectionRatio(Model &model) const;
-
-    unsigned int countInfected(Model &model) const;
-
-    void tryInfectRandomComputer(Model &model);
+    void infectRandomComputer(Model &model);
 
     void doStep(Model &model);
+
+    bool willUpdate(Computer &computer, Model &model);
 };
 
 

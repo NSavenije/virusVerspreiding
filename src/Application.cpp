@@ -4,53 +4,46 @@
 
 #include <iostream>
 #include "Application.h"
-#include "Model.h"
 
 
 Application::Application(const RandomNumberGenerator &generator) : generator(generator) {}
 
-unsigned int Application::run(Model model) {
+std::vector<Statistics> Application::run(Model &model) {
 
-    // infect patient zero
-    unsigned int numComputers = model.getNumComputers();
-    model.getComputer(generator.genUnsignedInt(numComputers)).infect();
+    infectRandomComputer(model);
 
-    for (int currentStep = 0; currentStep < model.getNumSteps(); currentStep++) {
+    std::vector<Statistics> statistics(model.getNumDays());
+    for (int day = 0; day < model.getNumDays(); day++) {
         doStep(model);
+        statistics[day] = model.getStatistics();
     }
 
-    return countInfected(model);
+    return statistics;
 }
 
 void Application::doStep(Model &model) {
-    std::vector<Computer> &computers = model.getComputers();
-    for (auto &computer : computers) {
-        if (!computer.isShielded() && generator.genBool(model.getUpdateChancePerStep())) {
-            computer.shield();
-        }
-    }
-
-    for (auto &computer : computers) {
-        if (computer.isInfected()) {
-            tryInfectRandomComputer(model);
-        }
-    }
-}
-
-void Application::tryInfectRandomComputer(Model &model) {
-    std::vector<Computer> &computers = model.getComputers();
-    Computer &computer = computers[generator.genUnsignedLong(computers.size())];
-    if (!computer.isShielded()) {
-        computer.infect();
-    }
-}
-
-unsigned int Application::countInfected(Model &model) const {
-    unsigned int numInfectedComputers = 0;
     for (auto &computer : model.getComputers()) {
-        if (computer.isInfected()) {
-            numInfectedComputers++;
+        if (willUpdate(computer, model)) {
+            model.updateComputer(computer);
         }
     }
-    return numInfectedComputers;
+
+    for (auto &computer : model.getComputers()) {
+        if (model.isInfected(computer)) {
+            infectRandomComputer(model);
+        }
+    }
+}
+
+bool Application::willUpdate(Computer & computer, Model & model) {
+    if (model.isUpdated(computer)) {
+        return false;
+    }
+
+    return generator.genBool(model.getUpdateChance());
+}
+
+void Application::infectRandomComputer(Model &model) {
+    model.infectComputer(model.getComputer(generator.genUnsignedInt(model.getNumComputers())));
+
 }
