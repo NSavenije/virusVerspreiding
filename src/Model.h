@@ -6,39 +6,40 @@
 #define VIRUS_MODEL_H
 
 #include <vector>
+
 #include "Computer.h"
-#include "Statistics.h"
+#include "Scenario.h"
 
 class Model {
 public:
-    Model(unsigned int numComputers, unsigned int numDays, double updateChance);
+    Model(unsigned int numComputers);
 
-    void updateComputer(Computer &computer);
+    const std::vector<Computer> & getComputers() const;
+
+    const std::vector<Computer> &getInfectedComputers() const;
+
+    Computer & getComputer(unsigned int index);
+
     void infectComputer(Computer &computer);
 
-    bool isInfected(Computer &computer) const;
-    bool isUpdated(Computer &computer) const;
+    void protectComputer(Computer &computer);
 
-    double getUpdateChance() const;
-    unsigned int getNumDays() const;
+    unsigned int getNumInfected() const;
+
     unsigned int getNumComputers() const;
 
-    std::vector<Computer> & getComputers();
-    Computer & getComputer(unsigned int index);
-    Statistics getStatistics();
+    unsigned int getNumProtected() const;
 
+    bool isInfected(Computer &computer) const;
 
 private:
-    unsigned int numDays;
+    unsigned int numProtected;
+    unsigned int numInfected;
     unsigned int numComputers;
 
-    double updateChance;
-    unsigned int infections;
-    unsigned int infected;
-
-    unsigned int updated;
-
     std::vector<Computer> computers;
+    std::vector<Computer> infectedComputers;
+
 };
 
 #endif //VIRUS_MODEL_H
